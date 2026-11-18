@@ -1,0 +1,147 @@
+# Backend de retrospectivas - VS Code + REST Client
+# Dentro de back/retrospectivas_ms:
+# composer install
+# Ajusta las credenciales MySQL en app/global/database_config.php.
+# composer start
+# Usa las tablas originales. No hay migraciones.
+# Las fechas de REST Client usan el reloj de tu equipo.
+# Copia los IDs devueltos por la API en sprintId e itemId.
+@baseUrl = http://127.0.0.1:8000
+@sprintId = 1
+@itemId = 1
+@fechaInicio = {{$datetime "YYYY-MM-DD"}}
+@fechaFin = {{$datetime "YYYY-MM-DD" 7 d}}
+
+### Salud (no consulta MySQL)
+GET {{baseUrl}}/salud
+Accept: application/json
+
+### Estado de navegación (consultar primero desde el frontend)
+GET {{baseUrl}}/estado
+
+### Listar sprints
+GET {{baseUrl}}/sprints
+
+### Sprint actual y programado (pueden ser null)
+GET {{baseUrl}}/sprints/actual
+
+### Historial de retrospectivas
+GET {{baseUrl}}/sprints/anteriores
+
+### Acciones del último sprint finalizado
+GET {{baseUrl}}/sprints/ultimo/acciones
+
+### Agendar con varios objetivos
+# @name crearSprint
+POST {{baseUrl}}/sprints
+Content-Type: application/json
+
+{
+  "nombre": "Sprint 1",
+  "fecha_inicio": "{{fechaInicio}}",
+  "fecha_fin": "{{fechaFin}}",
+  "objetivos": ["Diseñar la pantalla principal", "Consultar los sprints", "Probar el guardado"],
+  "retomar": []
+}
+
+### Detalle completo del sprint
+GET {{baseUrl}}/sprints/{{sprintId}}
+
+### Editar nombre y fecha final (inicio se conserva si ya comenzó)
+PUT {{baseUrl}}/sprints/{{sprintId}}
+Content-Type: application/json
+
+{
+  "nombre": "Sprint actualizado",
+  "fecha_fin": "{{fechaFin}}"
+}
+
+### Consultar registros del sprint
+GET {{baseUrl}}/sprints/{{sprintId}}/items
+
+### Crear registro: accion, logro, impedimento, comentario u otro
+# Un acuerdo de mejora es accion con cumplida=false.
+# @name crearItem
+POST {{baseUrl}}/sprints/{{sprintId}}/items
+Content-Type: application/json
+
+{
+  "categoria": "accion",
+  "descripcion": "Revisar el código antes de entregar",
+  "cumplida": false,
+  "fecha_revision": "{{fechaFin}}"
+}
+
+### Consultar un registro
+GET {{baseUrl}}/items/{{itemId}}
+
+### Editar descripción, categoría y cumplimiento
+PUT {{baseUrl}}/items/{{itemId}}
+Content-Type: application/json
+
+{
+  "categoria": "accion",
+  "descripcion": "Revisar el código y ejecutar pruebas",
+  "cumplida": true
+}
+
+### Eliminar un registro (pide confirmación en el frontend)
+# Esta petición BORRA el registro indicado.
+DELETE {{baseUrl}}/items/{{itemId}}
+
+### Consultar retrospectiva y necesidad de confirmación anticipada
+GET {{baseUrl}}/sprints/{{sprintId}}/retrospectiva
+
+### Intentar finalizar sin confirmar adelanto
+# Responde 409 CONFIRMACION_REQUERIDA si aún no llega la fecha final.
+POST {{baseUrl}}/sprints/{{sprintId}}/retrospectiva/finalizar
+Content-Type: application/json
+
+{
+  "realizadas": [],
+  "adicionales": [],
+  "logros": [],
+  "impedimentos": [],
+  "comentarios": [],
+  "acuerdos": [],
+  "confirmar_anticipada": false
+}
+
+### Finalizar después de que el usuario confirme
+# realizadas contiene IDs REALES de acciones del sprint.
+# Lo no seleccionado queda pendiente.
+# adicionales son tareas ya realizadas.
+# acuerdos son nuevas acciones pendientes para el siguiente sprint.
+# NO se permite finalizar dos veces.
+POST {{baseUrl}}/sprints/{{sprintId}}/retrospectiva/finalizar
+Content-Type: application/json
+
+{
+  "realizadas": [],
+  "adicionales": ["Documentar las rutas de la API"],
+  "logros": ["El equipo completó la interfaz"],
+  "impedimentos": ["Faltó tiempo para las pruebas"],
+  "comentarios": ["Organizar mejor las reuniones"],
+  "acuerdos": ["Revisar el código antes de entregar"],
+  "confirmar_anticipada": true
+}
+
+### Resumen global con tres elementos por lista y contador restantes
+GET {{baseUrl}}/proyecto/resumen
+
+### Resumen global completo
+GET {{baseUrl}}/proyecto/resumen?limite=0
+
+### Agendar el siguiente sprint y retomar pendientes
+# Sustituye retomar por los IDs pendientes de /sprints/ultimo/acciones.
+# Solo funciona si no hay otro sprint abierto o programado.
+POST {{baseUrl}}/sprints
+Content-Type: application/json
+
+{
+  "nombre": "Sprint siguiente",
+  "fecha_inicio": "{{fechaInicio}}",
+  "fecha_fin": "{{fechaFin}}",
+  "objetivos": ["Implementar nuevas mejoras"],
+  "retomar": []
+}
