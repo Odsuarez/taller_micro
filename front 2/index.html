@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1015">
+  <title>RetroFlow | Retrospectivas Scrum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+
+<body data-page="dashboard">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="RetroFlow inicio"><span class="brand-mark">R</span><span>retro<span
+            class="brand-light">flow</span><small>SCRUM WORKSPACE</small></span></a>
+      <div class="workspace-label">ESPACIO DE TRABAJO</div>
+      <nav class="nav">
+        <a class="nav-link" data-page-link="dashboard" href="index.html"><span class="nav-icon">▦</span>Resumen</a>
+        <a class="nav-link" data-page-link="sprints" href="sprints.html"><span class="nav-icon">◷</span>Sprints</a>
+        <a class="nav-link" data-page-link="history" href="historial.html"><span class="nav-icon">↺</span>Historial</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="api-status"><span class="status-dot" id="apiDot"></span><span><b id="apiStatus">Comprobando
+              API</b><small id="apiUrlLabel">127.0.0.1:8000</small></span></div>
+        <button class="settings-link" id="configBtn">⚙ Configurar conexión</button>
+        <div class="profile">
+          <div class="avatar">RF</div><span><b>Equipo Scrum</b><small>Panel de retrospectivas</small></span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow" id="crumb">WORKSPACE / RESUMEN</div>
+          <h1 id="pageTitle">Resumen general</h1>
+        </div>
+        <div class="top-actions"><span class="today" id="todayLabel"></span><button class="button button-primary"
+            id="newSprintBtn">＋ Nuevo sprint</button></div>
+      </header>
+      <div id="noticeArea"></div>
+      <section class="view active" id="view-dashboard">
+        <div class="welcome-row">
+          <div>
+            <div class="eyebrow accent">VISTA DEL EQUIPO</div>
+            <h2>Un equipo mejor, <em>sprint</em> a <em>sprint.</em></h2>
+            <p>Revisa el progreso, identifica bloqueos y convierte aprendizajes en acciones.</p>
+          </div>
+          <div class="welcome-symbol">↗</div>
+        </div>
+        <div class="stat-grid">
+          <article class="stat-card">
+            <div class="stat-top"><span>Sprints finalizados</span><span class="stat-icon purple">◷</span></div><strong
+              id="statSprints">—</strong><small>Retrospectivas completadas</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>Acciones realizadas</span><span class="stat-icon green">✓</span></div><strong
+              id="statDone">—</strong><small>Objetivos completados</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>Acciones pendientes</span><span class="stat-icon amber">⌁</span></div><strong
+              id="statPending">—</strong><small>Por retomar o completar</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>Impedimentos</span><span class="stat-icon red">!</span></div><strong
+              id="statBlocks">—</strong><small>Registrados en retrospectivas</small>
+          </article>
+        </div>
+        <div class="content-grid">
+          <section class="panel sprint-focus">
+            <div class="panel-heading">
+              <div>
+                <div class="eyebrow">EN SEGUIMIENTO</div>
+                <h3>Sprint actual</h3>
+              </div><span class="pill pill-live" id="currentPill">Sin sprint</span>
+            </div>
+            <div id="currentSprint" class="empty-state compact">
+              <div class="empty-icon">◷</div><b>No hay un sprint en curso</b>
+              <p>Crea un sprint para comenzar a organizar los objetivos del equipo.</p><button
+                class="button button-secondary" data-action="create">Crear sprint</button>
+            </div>
+          </section>
+          <section class="panel past-sprints-panel">
+            <div class="panel-heading">
+              <div>
+                <div class="eyebrow">CICLOS ANTERIORES</div>
+                <h3>Sprints pasados</h3>
+              </div><span class="pill pill-done">Finalizados</span>
+            </div>
+            <div id="pastSprints" class="past-sprint-list">
+              <div class="empty-state compact">
+                <div class="empty-icon">↺</div><b>Aún no hay sprints pasados</b>
+                <p>Los sprints finalizados aparecerán aquí.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <div class="eyebrow">SEGUIMIENTO</div>
+              <h3>Acciones por estado</h3>
+            </div><div style="display:flex;gap:10px;align-items:center"><select id="limitSelect" title="Cantidad de acciones a mostrar"><option value="3">Mostrar 3</option><option value="10">Mostrar 10</option><option value="0">Mostrar todas</option></select><a class="text-button" href="historial.html">Ver historial →</a></div>
+          </div>
+          <div class="progress-summary">
+            <div class="progress-track"><span id="progressBar"></span></div>
+            <div class="progress-labels"><span id="progressDone">0 realizadas</span><span id="progressPending">0
+                pendientes</span></div>
+          </div>
+          <div id="recentList" class="mini-list"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-sprints">
+        <div class="section-intro">
+          <div>
+            <h2>Todos los sprints</h2>
+            <p>Administra objetivos, fechas y retrospectivas de tu equipo.</p>
+          </div><button class="button button-primary" id="newSprintBtn2">＋ Crear sprint</button>
+        </div>
+        <div class="filter-row">
+          <div class="search-box">⌕ <input id="sprintSearch" placeholder="Buscar sprint..." /></div><select
+            id="statusFilter">
+            <option value="todos">Todos los estados</option>
+            <option value="actual">Actuales</option>
+            <option value="programado">Programados</option>
+            <option value="finalizado">Finalizados</option>
+          </select>
+        </div>
+        <div id="sprintList" class="sprint-list"></div>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="section-intro">
+          <div>
+            <h2>Historial de retrospectivas</h2>
+            <p>Aprendizajes, logros y compromisos de ciclos anteriores.</p>
+          </div>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+
+      <section class="view" id="view-detail">
+        <div class="back-row"><a class="text-button" href="sprints.html">← Volver a sprints</a><span
+            id="detailStatus" class="pill"></span></div>
+        <div id="detailContent"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="sprintDialog" class="modal">
+    <form id="sprintForm" class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">PLANIFICACIÓN</div>
+          <h2>Crear nuevo sprint</h2>
+        </div><button type="button" class="close-btn" data-close="sprintDialog">×</button>
+      </div>
+      <label>Nombre del sprint<input name="nombre" required maxlength="100" placeholder="Ej. Sprint 04"></label>
+      <div class="form-grid"><label>Fecha de inicio<input name="fecha_inicio" type="date" required></label><label>Fecha
+          de finalización<input name="fecha_fin" type="date" required></label></div>
+      <label>Objetivos iniciales <span class="label-hint">Uno por línea</span><textarea name="objetivos" rows="4"
+          placeholder="Diseñar la pantalla principal&#10;Conectar la API&#10;Realizar pruebas"
+          required></textarea></label>
+      <div id="carryBox" class="carry-box hidden"><b>Acciones pendientes del último sprint</b>
+        <div id="carryList"></div>
+      </div>
+      <div class="modal-actions"><button type="button" class="button button-secondary"
+          data-close="sprintDialog">Cancelar</button><button class="button button-primary" type="submit">Crear
+          sprint</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="itemDialog" class="modal">
+    <form id="itemForm" class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">SPRINT</div>
+          <h2 id="itemDialogTitle">Agregar elemento</h2>
+        </div><button type="button" class="close-btn" data-close="itemDialog">×</button>
+      </div>
+      <label>Tipo<select name="categoria">
+          <option value="accion">Acción / objetivo</option>
+          <option value="logro">Logro</option>
+          <option value="impedimento">Impedimento</option>
+          <option value="comentario">Comentario</option>
+          <option value="otro">Otro</option>
+        </select></label>
+      <label>Descripción<textarea name="descripcion" rows="3" required
+          placeholder="Describe el elemento..."></textarea></label>
+      <label class="check-line" id="doneWrap"><input name="cumplida" type="checkbox"> La acción ya está cumplida</label>
+      <div class="modal-actions"><button type="button" class="button button-secondary"
+          data-close="itemDialog">Cancelar</button><button class="button button-primary" id="itemSubmit">Guardar elemento</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="finishDialog" class="modal modal-wide">
+    <form id="finishForm" class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">CIERRE DE CICLO</div>
+          <h2>Retrospectiva del sprint</h2>
+          <p>Evalúa los objetivos y registra los aprendizajes del equipo.</p>
+        </div><button type="button" class="close-btn" data-close="finishDialog">×</button>
+      </div>
+      <div id="finishEarlyNotice" class="inline-warning hidden"></div>
+      <div class="finish-section">
+        <h3>¿Qué objetivos se completaron?</h3>
+        <p>Marca las acciones realizadas. Las demás quedarán pendientes.</p>
+        <div id="finishActions" class="choice-list"></div>
+      </div>
+      <div class="finish-grid">
+        <label>Acciones adicionales realizadas<textarea name="adicionales" rows="3"
+            placeholder="Una por línea"></textarea></label>
+        <label>Logros<textarea name="logros" rows="3" placeholder="Una por línea"></textarea></label>
+        <label>Impedimentos<textarea name="impedimentos" rows="3" placeholder="Una por línea"></textarea></label>
+        <label>Comentarios<textarea name="comentarios" rows="3" placeholder="Una por línea"></textarea></label>
+        <label class="full">Acuerdos para el siguiente sprint<textarea name="acuerdos" rows="3"
+            placeholder="Una acción pendiente por línea"></textarea></label>
+      </div>
+      <label class="check-line confirm-line"><input name="confirmar_anticipada" type="checkbox"> Confirmo que deseo
+        finalizar la retrospectiva antes de la fecha programada.</label>
+      <div class="modal-actions"><button type="button" class="button button-secondary"
+          data-close="finishDialog">Cancelar</button><button class="button button-primary">Finalizar
+          retrospectiva</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="editSprintDialog" class="modal">
+    <form id="editSprintForm" class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">SPRINT</div>
+          <h2>Editar sprint</h2>
+        </div><button type="button" class="close-btn" data-close="editSprintDialog">×</button>
+      </div>
+      <label>Nombre del sprint<input name="nombre" required maxlength="100"></label>
+      <div class="form-grid"><label>Fecha de inicio<input name="fecha_inicio" type="date" required></label><label>Fecha
+          de finalización<input name="fecha_fin" type="date" required></label></div>
+      <p class="form-help hidden" id="editSprintHint">El sprint ya comenzó; su fecha de inicio no se puede cambiar.</p>
+      <div class="modal-actions"><button type="button" class="button button-secondary"
+          data-close="editSprintDialog">Cancelar</button><button class="button button-primary" type="submit">Guardar
+          cambios</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="configDialog" class="modal">
+    <form id="configForm" class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">CONFIGURACIÓN</div>
+          <h2>Conexión con el backend</h2>
+        </div><button type="button" class="close-btn" data-close="configDialog">×</button>
+      </div>
+      <label>URL base de la API<input name="apiUrl" type="url" required placeholder="http://127.0.0.1:8000"></label>
+      <p class="form-help">Debe apuntar a la dirección donde está ejecutándose Slim. No agregues una barra al final.</p>
+      <div class="modal-actions"><button type="button" class="button button-secondary"
+          data-close="configDialog">Cancelar</button><button class="button button-primary">Guardar conexión</button>
+      </div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="assets/app.js"></script>
+</body>
+
+</html>
