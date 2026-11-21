@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'oscar/retrospectivas-api',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'b401e97396325fde2dc9ae4ab4be89c7e4d3de7e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -146,9 +146,9 @@
             'dev_requirement' => false,
         ),
         'oscar/retrospectivas-api' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'b401e97396325fde2dc9ae4ab4be89c7e4d3de7e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

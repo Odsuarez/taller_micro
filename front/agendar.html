@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Retrospectivas ágiles</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="JS/app.js" defer></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="page-title" href="index.html">Retrospectivas ágiles</a>
+      <nav aria-label="Navegación principal">
+        <a class="button primary" href="retrospectiva.html"
+          >Iniciar retrospectiva</a
+        ><a class="button" href="sprint_actual.html">Ver sprint actual</a
+        ><a class="button" href="anteriores.html">Ver sprints anteriores</a>
+      </nav>
+    </header>
+    <main>
+      <div id="error" class="error-box" role="alert"></div>
+      <div id="contenido"><p class="muted">Cargando información...</p></div>
+    </main>
+    <footer class="app-footer" hidden>
+      <button class="text-link" type="button" id="conexion">
+        Configurar conexión</button
+      ><span id="estado-conexion"></span>
+    </footer>
+    <dialog id="configuracion">
+      <form id="configurar">
+        <h2>Conexión con el backend</h2>
+        <label
+          >Dirección de la API<input
+            type="url"
+            name="url"
+            required
+            placeholder="http://127.0.0.1:8000"
+        /></label>
+        <div class="form-actions">
+          <button class="button light" type="button" id="cerrar-configuracion">
+            Cancelar</button
+          ><button class="button primary">Guardar</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
